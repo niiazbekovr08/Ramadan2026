@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Токмок Go — Сервис городской доставки и экспресс-услуг</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Верхняя панель (Header) -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo-area" onclick="navigateTo('home')">
+                <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="logo-text">Токмок<span>Go</span></div>
+            </div>
+
+            <nav class="nav-links" id="navLinks">
+                <a href="#" class="nav-item active" onclick="navigateTo('home')"><i class="fa-solid fa-house"></i> Главная</a>
+                <a href="#" class="nav-item" onclick="navigateTo('food')"><i class="fa-solid fa-utensils"></i> Еда</a>
+                <a href="#" class="nav-item" onclick="navigateTo('market')"><i class="fa-solid fa-basket-shopping"></i> Продукты</a>
+                <a href="#" class="nav-item" onclick="navigateTo('pharma')"><i class="fa-solid fa-capsules"></i> Аптеки</a>
+                <a href="#" class="nav-item" onclick="navigateTo('express')"><i class="fa-solid fa-paper-plane"></i> Курьер</a>
+                <a href="#" class="nav-item" onclick="navigateTo('cargo')"><i class="fa-solid fa-truck-ramps"></i> Грузовой</a>
+                <a href="#" class="nav-item" onclick="navigateTo('rates')"><i class="fa-solid fa-tags"></i> Тарифы</a>
+                <a href="#" class="nav-item" onclick="navigateTo('tracking')"><i class="fa-solid fa-location-dot"></i> Трекинг</a>
+                <a href="#" class="nav-item" onclick="navigateTo('partners')"><i class="fa-solid fa-briefcase"></i> Работа</a>
+                <a href="#" class="nav-item" onclick="navigateTo('contacts')"><i class="fa-solid fa-headset"></i> Контакты</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" title="Сменить тему">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="cart-btn" onclick="toggleCartModal()">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </div>
+                <div class="mobile-burger" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент (10 Страниц SPA) -->
+    <main class="main-content">
+
+        <!-- 1. Главная -->
+        <section id="page-home" class="page-section active">
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <span class="badge"><i class="fa-solid fa-bolt"></i> Токмок • Доставка от 15 минут</span>
+                    <h1>Быстрая доставка еды, продуктов и посылок по Токмоку</h1>
+                    <p>Заказывайте блюда из лучших ресторанов, продукты из супермаркетов или отправляйте курьера в любую точку города.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="navigateTo('food')"><i class="fa-solid fa-utensils"></i> Заказать еду</button>
+                        <button class="btn btn-secondary" onclick="navigateTo('express')"><i class="fa-solid fa-box"></i> Отправить посылку</button>
+                    </div>
+                </div>
+
+                <div class="calc-card">
+                    <h3><i class="fa-solid fa-calculator"></i> Быстрый расчёт доставки</h3>
+                    <div class="form-group">
+                        <label>Откуда (ул. / точка в Токмоке):</label>
+                        <input type="text" id="calcFrom" value="ул. Жантаева, 42" placeholder="Например: ЦУМ Токмок">
+                    </div>
+                    <div class="form-group">
+                        <label>Куда:</label>
+                        <input type="text" id="calcTo" placeholder="Например: Мкр 3, дом 12">
+                    </div>
+                    <div class="form-group">
+                        <label>Зона доставки:</label>
+                        <select id="calcZone" onchange="calculatePrice()">
+                            <option value="100">Центр (ул. Жантаева / Ибраимова / Ленина)</option>
+                            <option value="130">Микрорайоны №1, №2, №3 / Военный городок</option>
+                            <option value="180">Промзона / с. Чуй / Жаны-Чек</option>
+                            <option value="250">Пригород / Башня Бурана</option>
+                        </select>
+                    </div>
+                    <div class="calc-result">
+                        <span>Итоговая стоимость:</span>
+                        <strong id="calcPrice">100 сом</strong>
+                    </div>
+                    <button class="btn btn-primary full-width" onclick="navigateTo('express')">Оформить вызов курьера</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Еда и Рестораны -->
+        <section id="page-food" class="page-section">
+            <div class="section-title">
+                <h2>Рестораны и Кафе Токмока</h2>
+                <p>Горячие блюда, национальная кухня, шашлыки и фастфуд</p>
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="foodSearch" placeholder="Поиск блюда или заведения..." oninput="filterCategory('food')">
+                <div class="tags" id="foodCategoryTags">
+                    <button class="tag-btn active" onclick="filterByTag('food', 'all', this)">Все</button>
+                    <button class="tag-btn" onclick="filterByTag('food', 'national', this)">Национальная</button>
+                    <button class="tag-btn" onclick="filterByTag('food', 'fastfood', this)">Фастфуд</button>
+                    <button class="tag-btn" onclick="filterByTag('food', 'bbq', this)">Шашлыки</button>
+                </div>
+            </div>
+
+            <div class="products-grid" id="foodGrid"></div>
+        </section>
+
+        <!-- 3. Продукты -->
+        <section id="page-market" class="page-section">
+            <div class="section-title">
+                <h2>Супермаркеты и Продукты</h2>
+                <p>Доставка свежих продуктов из магазинов «Глобус», «Народный» и местных лавок</p>
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="marketSearch" placeholder="Поиск продуктов..." oninput="filterCategory('market')">
+                <div class="tags">
+                    <button class="tag-btn active" onclick="filterByTag('market', 'all', this)">Все</button>
+                    <button class="tag-btn" onclick="filterByTag('market', 'dairy', this)">Молочка и Хлеб</button>
+                    <button class="tag-btn" onclick="filterByTag('market', 'drinks', this)">Напитки</button>
+                    <button class="tag-btn" onclick="filterByTag('market', 'grocery', this)">Бакалея</button>
+                </div>
+            </div>
+
+            <div class="products-grid" id="marketGrid"></div>
+        </section>
+
+        <!-- 4. Аптеки -->
+        <section id="page-pharma" class="page-section">
+            <div class="section-title">
+                <h2>Аптеки и Лекарства</h2>
+                <p>Быстрая доставка медикаментов и товаров первой необходимости</p>
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="pharmaSearch" placeholder="Поиск лекарств..." oninput="filterCategory('pharma')">
+            </div>
+
+            <div class="products-grid" id="pharmaGrid"></div>
+        </section>
+
+        <!-- 5. Экспресс Курьер -->
+        <section id="page-express" class="page-section">
+            <div class="section-title">
+                <h2>Экспресс-Курьер по Токмоку</h2>
+                <p>Передадим ключи, документы, покупки или подарки из рук в руки</p>
+            </div>
+            <div class="express-box">
+                <form onsubmit="handleExpressSubmit(event)">
+                    <div class="form-group">
+                        <label>Адрес отправления (Откуда):</label>
+                        <input type="text" placeholder="г. Токмок, ул. Шамсинская, д. 12" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Адрес назначения (Куда):</label>
+                        <input type="text" placeholder="г. Токмок, Мкр. 2, д. 15, кв. 4" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Что перевезти:</label>
+                        <input type="text" placeholder="Документы, ключи от дома, пакет с вещами..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ваш телефон (WhatsApp):</label>
+                        <input type="tel" placeholder="+996 700 123 456" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">Заказать курьера</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 6. Грузовое такси -->
+        <section id="page-cargo" class="page-section">
+            <div class="section-title">
+                <h2>Грузоперевозки по Токмоку и Чуйской области</h2>
+                <p>Переезды квартир, перевозка стройматериалов, мебели и крупной техники</p>
+            </div>
+            <div class="cargo-cards">
+                <div class="cargo-card">
+                    <i class="fa-solid fa-truck-pickup cargo-icon"></i>
+                    <h3>Porter / Labo</h3>
+                    <p>Грузоподъемность до 1.5 тонн. Идеально для перевозки бытовой техники, диванов и коробок.</p>
+                    <div class="price">400 сом / час</div>
+                    <button class="btn btn-primary full-width" onclick="alert('Заявка на Porter принята! Диспетчер свяжется с вами через 2 минуты.')">Заказать Porter</button>
+                </div>
+                <div class="cargo-card">
+                    <i class="fa-solid fa-truck-moving cargo-icon"></i>
+                    <h3>Грузовой Бус / Мерседес Спринтер</h3>
+                    <p>Грузоподъемность до 3.5 тонн. Полноценный квартирный или офисный переезд.</p>
+                    <div class="price">800 сом / час</div>
+                    <button class="btn btn-primary full-width" onclick="alert('Заявка на Бус принята! Менеджер свяжется с вами.')">Заказать Бус</button>
+                </div>
+                <div class="cargo-card">
+                    <i class="fa-solid fa-people-carry-box cargo-icon"></i>
+                    <h3>Услуги Грузчиков</h3>
+                    <p>Опытные грузчики для спуска, подъема на этаж и аккуратной погрузки.</p>
+                    <div class="price">300 сом / час (1 человек)</div>
+                    <button class="btn btn-secondary full-width" onclick="alert('Грузчики добавлены к заказу!')">Вызвать грузчиков</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Тарифы -->
+        <section id="page-rates" class="page-section">
+            <div class="section-title">
+                <h2>Прозрачные тарифы по Токмоку</h2>
+                <p>Фиксированные цены без скрытых комиссий</p>
+            </div>
+            <div class="rates-grid">
+                <div class="rate-card">
+                    <div class="rate-badge">Зона 1</div>
+                    <h3>Центральный район</h3>
+                    <p>Улицы: Жантаева, Ибраимова, Шамсинская, Ленина, район Центрального рынка.</p>
+                    <div class="rate-price">100 сом</div>
+                </div>
+                <div class="rate-card">
+                    <div class="rate-badge">Зона 2</div>
+                    <h3>Микрорайоны и Окраины</h3>
+                    <p>Микрорайоны №1, №2, №3, Военный городок, район мясокомбината.</p>
+                    <div class="rate-price">130 сом</div>
+                </div>
+                <div class="rate-card">
+                    <div class="rate-badge">Зона 3</div>
+                    <h3>Пригородные зоны</h3>
+                    <p>Село Чуй, Жаны-Чек, Промышленная зона, авторынок.</p>
+                    <div class="rate-price">180 сом</div>
+                </div>
+                <div class="rate-card">
+                    <div class="rate-badge">Зона 4</div>
+                    <h3>Историческая зона</h3>
+                    <p>Башня Бурана, дальние айылы и загородные комплексы.</p>
+                    <div class="rate-price">от 250 сом</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Live Трекинг -->
+        <section id="page-tracking" class="page-section">
+            <div class="section-title">
+                <h2>Live Отслеживание заказа</h2>
+                <p>Заказ #TK-9204 • Курьер в пути по Токмоку</p>
+            </div>
+            <div class="tracking-box">
+                <div class="tracking-progress">
+                    <div class="progress-bar-fill" id="progressBar" style="width: 65%;"></div>
+                </div>
+                <div class="status-steps">
+                    <div class="status-step active"><i class="fa-solid fa-check"></i> Заказ принят</div>
+                    <div class="status-step active"><i class="fa-solid fa-kitchen-set"></i> Готовится</div>
+                    <div class="status-step active"><i class="fa-solid fa-person-biking"></i> В пути</div>
+                    <div class="status-step"><i class="fa-solid fa-house-user"></i> Доставлено</div>
+                </div>
+
+                <div class="courier-card">
+                    <div class="courier-avatar"><i class="fa-solid fa-helmet-safety"></i></div>
+                    <div class="courier-details">
+                        <h4>Курьер: Нурбек</h4>
+                        <p><i class="fa-solid fa-motorcycle"></i> Черный Скутер (08KG 432 ABC)</p>
+                        <p><i class="fa-solid fa-clock"></i> Примерное время прибытия: <strong>12 минут</strong></p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="alert('Вызов курьеру Нурбеку: +996 550 98-76-54')"><i class="fa-solid fa-phone"></i> Позвонить</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Вакансии / Партнерам -->
+        <section id="page-partners" class="page-section">
+            <div class="section-title">
+                <h2>Сотрудничество и Работа в Токмоке</h2>
+                <p>Станьте курьером с ежедневной оплатой или подключите ваше заведение к Токмок Go</p>
+            </div>
+            <div class="partners-box">
+                <h3>Заявка на подключение</h3>
+                <form onsubmit="alert('Спасибо за заявку! Наш менеджер в Токмоке свяжется с вами в течение часа.'); return false;">
+                    <div class="form-group">
+                        <label>Ваше имя:</label>
+                        <input type="text" placeholder="Азамат" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Контактный номер (WhatsApp):</label>
+                        <input type="tel" placeholder="+996 555 000 111" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Направление:</label>
+                        <select>
+                            <option>Хочу работать курьером (Пеший / Скутер / Вело)</option>
+                            <option>Водитель с личным авто</option>
+                            <option>Водитель Porter / Грузовика</option>
+                            <option>Подключить Ресторан / Кафе / Магазин</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">Отправить заявку</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 10. Контакты & FAQ -->
+        <section id="page-contacts" class="page-section">
+            <div class="section-title">
+                <h2>Контакты и Служба Поддержки</h2>
+                <p>Мы на связи 24/7 для жителей и гостей города Токмок</p>
+            </div>
+            <div class="contacts-grid">
+                <div class="contact-card">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <h3>Офис в Токмоке</h3>
+                    <p>ул. Шамсинская, 2 (ориентир: Муца)</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fa-solid fa-phone"></i>
+                    <h3>Горячая линия / WhatsApp</h3>
+                    <p>+996 (700) 07-01-47<br>+996 (700) 07-01-47</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fa-solid fa-clock"></i>
+                    <h3>Режим работы</h3>
+                    <p>Доставка: Круглосуточно (24/7)<br>Офис: 09:00 - 18:00</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Модальное окно корзины -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3><i class="fa-solid fa-cart-shopping"></i> Ваш заказ</h3>
+                <span class="close-cart" onclick="toggleCartModal()">&times;</span>
+            </div>
+            <div class="cart-body" id="cartItems">
+                <p class="empty-msg">Корзина пуста</p>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Сумма заказа:</span>
+                    <strong id="cartTotalPrice">0 сом</strong>
+                </div>
+                <button class="btn btn-primary full-width" onclick="checkout()">Подтвердить и оформить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно Detail (Подробная информация) -->
+    <div class="cart-modal" id="detailModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3 id="detailTitle">Подробности</h3>
+                <span class="close-cart" onclick="closeDetailModal()">&times;</span>
+            </div>
+            <div class="cart-body">
+                <img id="detailImage" src="" alt="" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 12px;">
+                <p id="detailPlace" class="place-tag" style="margin-bottom: 8px; font-weight: bold; color: var(--primary-color);"></p>
+                <p id="detailDesc" style="line-height: 1.5; color: var(--text-color); margin-bottom: 15px;"></p>
+                <div style="font-size: 1.3rem; font-weight: bold; color: #34c759; margin-bottom: 15px;" id="detailPrice"></div>
+            </div>
+            <div class="cart-footer">
+                <button class="btn btn-primary full-width" id="detailAddToCartBtn">Добавить в корзину</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+
+    <!-- Модальное окно Detail (Подробная информация о товаре) -->
+    <div class="cart-modal" id="detailModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3 id="detailTitle">Детали товара</h3>
+                <span class="close-cart" onclick="closeDetailModal()">&times;</span>
+            </div>
+            <div class="cart-body">
+                <img id="detailImage" src="" alt="" style="width: 100%; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 12px;">
+                <p id="detailPlace" class="place-tag" style="margin-bottom: 8px; font-weight: bold; color: var(--primary-hover);"></p>
+                <p id="detailDesc" style="line-height: 1.5; color: var(--text-color); margin-bottom: 15px; font-size: 0.95rem;"></p>
+                <div style="font-size: 1.4rem; font-weight: 800; color: #34c759; margin-bottom: 15px;" id="detailPrice"></div>
+            </div>
+            <div class="cart-footer">
+                <button class="btn btn-primary full-width" id="detailAddToCartBtn">
+                <i class="fa-solid fa-cart-plus"></i> Добавить в корзину
+            </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
